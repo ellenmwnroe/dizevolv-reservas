@@ -4,9 +4,11 @@ import { prisma } from "@/lib/prisma"
 import { revalidatePath } from "next/cache"
 
 type RoomInput = {
-  name: string
-  capacity: number
-  location?: string
+  name: string;
+  capacity: number;
+  location: string;
+  description: string;
+  category: string; 
 }
 
 export async function createRoom(data: RoomInput) {
@@ -53,6 +55,8 @@ export async function updateRoom(data: {
   name: string; 
   capacity: number; 
   location: string 
+  description: string;
+  category: string;
 }) {
   try {
     // Atualiza a sala no banco de dados usando o Prisma
@@ -64,6 +68,8 @@ export async function updateRoom(data: {
         name: data.name,
         capacity: data.capacity,
         location: data.location,
+        description: data.description,
+        category: data.category
       },
     })
 
@@ -76,3 +82,4 @@ export async function updateRoom(data: {
     return { success: false, error: "Erro ao atualizar a sala no banco de dados." }
   }
 }
+
