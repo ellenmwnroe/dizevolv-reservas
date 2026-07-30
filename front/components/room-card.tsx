@@ -8,9 +8,8 @@ export type DbRoom = {
   name: string
   capacity: number
   description: string
-  category: string
   location: string
-  tag: string
+  tag: string // Mantemos apenas a tag aqui (category foi removida)
   status?: "livre" | "ocupada" | "em-breve"
   freeIn?: string
 }
@@ -49,22 +48,15 @@ export function RoomCard({ room, onReserve }: RoomCardProps) {
 
       <div className="flex items-start justify-between gap-3 w-full">
         <div className="flex flex-col gap-1.5">
-          {/* Se a tag antiga existir, renderiza a pílula cinza */}
-          {room.tag && (
-            <span className="inline-flex w-fit items-center rounded-md border border-border/70 bg-secondary/60 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-              {room.tag}
-            </span>
-          )}
-          
           <h3 className="text-lg font-semibold tracking-tight text-card-foreground">
             {room.name}
           </h3>
           
-          {/* Nova Tag Laranja */}
-          {room.category && (
+          {/* Tag Laranja lendo da propriedade correta: room.tag */}
+          {room.tag && (
             <div className="mt-1">
               <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#FF5A1F]/15 text-[#FF5A1F] border border-[#FF5A1F]/20">
-                {room.category}
+                {room.tag}
               </span>
             </div>
           )}
