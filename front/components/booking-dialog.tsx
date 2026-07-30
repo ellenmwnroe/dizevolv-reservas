@@ -18,7 +18,7 @@ type BookingDialogProps = {
   open: boolean
   onClose: () => void
   onConfirm: (values: BookingValues) => void
-  initialData?: any | null // NOVO: Dados opcionais para quando formos editar
+  initialData?: any | null 
 }
 
 const fieldClass =
@@ -33,11 +33,9 @@ export function BookingDialog({ room, open, onClose, onConfirm, initialData }: B
 
   const todayString = useMemo(() => new Date().toISOString().slice(0, 10), [])
 
-  // Preenche os campos se formos editar, ou limpa se for nova reserva
   useEffect(() => {
     if (open) {
       if (initialData) {
-        // Extrai a data e horários da reserva que está sendo editada
         const startObj = new Date(initialData.startTime)
         const endObj = new Date(initialData.endTime)
         
@@ -160,7 +158,7 @@ export function BookingDialog({ room, open, onClose, onConfirm, initialData }: B
           </Button>
         </div>
 
-        <form className="relative mt-6 flex flex-col gap-4" onSubmit={handleSubmit}>
+        <form className="relative mt-6 flex flex-col gap-4" onSubmit={handleSubmit} lang="pt-BR">
           <div className="flex flex-col gap-1.5">
             <label
               htmlFor="date"
@@ -173,6 +171,7 @@ export function BookingDialog({ room, open, onClose, onConfirm, initialData }: B
               <input
                 id="date"
                 type="date"
+                lang="pt-BR"
                 min={todayString}
                 value={date}
                 onChange={(event) => setDate(event.target.value)}
@@ -194,6 +193,7 @@ export function BookingDialog({ room, open, onClose, onConfirm, initialData }: B
                 <input
                   id="start"
                   type="time"
+                  lang="pt-BR"
                   min="09:00"
                   max="17:59"
                   value={startTime}
@@ -215,6 +215,7 @@ export function BookingDialog({ room, open, onClose, onConfirm, initialData }: B
                 <input
                   id="end"
                   type="time"
+                  lang="pt-BR"
                   min="09:01"
                   max="18:00"
                   value={endTime}
