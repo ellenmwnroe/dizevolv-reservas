@@ -1,0 +1,59 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../lib/generated/prisma/client" 
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id        String    @id @default(uuid())
+  name      String
+  email     String    @unique
+  role      String
+  
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  bookings  Booking[]
+
+  @@map("users")
+}
+
+model Room {
+  id          String    @id @default(uuid())
+  name        String
+  capacity    Int
+  description String?   
+  location    String?   
+  tag         String?   
+  
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  bookings    Booking[] 
+
+  @@map("rooms") 
+}
+
+model Booking {
+  id        String   @id @default(uuid())
+  title     String   // Motivo da reserva
+  
+  // Relacionamento com o Usuário (Substitui o antigo userName em texto)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  startTime DateTime // Horário de início exato
+  endTime   DateTime // Horário de término (usaremos para calcular os 10min de buffer depois)
+  
+  roomId    String
+  room      Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("bookings")
+}
