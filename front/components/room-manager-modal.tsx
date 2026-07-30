@@ -79,7 +79,7 @@ export function RoomManagerModal({ isOpen, onClose, rooms, onRoomChange, notify 
     setEditCapacity(String(room.capacity))
     setEditLocation(room.location || "")
     setEditDescription(room.description || "")
-    setEditCategory(room.tag || "") // CORRIGIDO: lendo de room.tag
+    setEditCategory(room.tag || "") 
   }
 
   function cancelEditing() {
