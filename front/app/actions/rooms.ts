@@ -4,16 +4,16 @@ import { prisma } from "@/lib/prisma"
 import { revalidatePath } from "next/cache"
 
 type RoomInput = {
-  name: string;
-  capacity: number;
-  location: string;
-  description: string;
-  category: string; 
+  name: string
+  capacity: number
+  location?: string
+  description?: string
+  tag?: string 
 }
 
 export async function createRoom(data: RoomInput) {
   try {
-    const { name, capacity, location } = data
+    const { name, capacity, location, description, tag } = data
 
     if (!name || !capacity) {
       return { success: false, error: "Nome e capacidade são obrigatórios." }
@@ -24,6 +24,8 @@ export async function createRoom(data: RoomInput) {
         name,
         capacity: Number(capacity),
         location: location || "Dizevolv - Sede",
+        description, 
+        tag,         
       },
     })
 
@@ -37,7 +39,6 @@ export async function createRoom(data: RoomInput) {
 
 export async function deleteRoom(id: string) {
   try {
-    // Opcional: Verificar se há reservas ativas antes de excluir
     await prisma.room.delete({
       where: { id },
     })
@@ -54,9 +55,9 @@ export async function updateRoom(data: {
   id: string; 
   name: string; 
   capacity: number; 
-  location: string 
-  description: string;
-  category: string;
+  location?: string;    
+  description?: string; 
+  tag?: string;       
 }) {
   try {
     // Atualiza a sala no banco de dados usando o Prisma
@@ -69,7 +70,7 @@ export async function updateRoom(data: {
         capacity: data.capacity,
         location: data.location,
         description: data.description,
-        category: data.category
+        tag: data.tag
       },
     })
 
@@ -82,4 +83,3 @@ export async function updateRoom(data: {
     return { success: false, error: "Erro ao atualizar a sala no banco de dados." }
   }
 }
-

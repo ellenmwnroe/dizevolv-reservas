@@ -42,7 +42,7 @@ export function RoomManagerModal({ isOpen, onClose, rooms, onRoomChange, notify 
       capacity: Number(capacity),
       location,
       description,
-      category,
+      tag: category, 
     })
 
     setIsLoading(false)
@@ -79,7 +79,7 @@ export function RoomManagerModal({ isOpen, onClose, rooms, onRoomChange, notify 
     setEditCapacity(String(room.capacity))
     setEditLocation(room.location || "")
     setEditDescription(room.description || "")
-    setEditCategory(room.category || "")
+    setEditCategory(room.tag || "") // CORRIGIDO: lendo de room.tag
   }
 
   function cancelEditing() {
@@ -94,7 +94,7 @@ export function RoomManagerModal({ isOpen, onClose, rooms, onRoomChange, notify 
       capacity: Number(editCapacity),
       location: editLocation,
       description: editDescription,
-      category: editCategory,
+      tag: editCategory, // CORRIGIDO: enviando 'tag' para o banco em vez de 'category'
     })
     setIsLoading(false)
 
@@ -184,10 +184,10 @@ export function RoomManagerModal({ isOpen, onClose, rooms, onRoomChange, notify 
                     <div className="flex items-center gap-2">
                       <p className="text-sm font-semibold text-foreground">{room.name}</p>
                       
-                      {/* LÓGICA DO FALLBACK DE CATEGORIA AQUI */}
-                      {room.category ? (
+                      {/* LÓGICA DO FALLBACK DE CATEGORIA CORRIGIDA (lendo room.tag) */}
+                      {room.tag ? (
                         <span className="text-[10px] font-bold uppercase tracking-wider text-primary bg-primary/10 px-2 py-0.5 rounded-full">
-                          {room.category}
+                          {room.tag}
                         </span>
                       ) : (
                         <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground bg-muted/50 border border-dashed border-border px-2 py-0.5 rounded-full">
@@ -196,7 +196,7 @@ export function RoomManagerModal({ isOpen, onClose, rooms, onRoomChange, notify 
                       )}
                     </div>
                     
-                    {/* LÓGICA DO FALLBACK DE DESCRIÇÃO AQUI */}
+                    {/* LÓGICA DO FALLBACK DE DESCRIÇÃO */}
                     {room.description ? (
                       <p className="text-xs text-muted-foreground mt-1 line-clamp-1">{room.description}</p>
                     ) : (
