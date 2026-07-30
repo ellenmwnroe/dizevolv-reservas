@@ -143,7 +143,7 @@ export function BookingDialog({ room, open, onClose, onConfirm, initialData }: B
               id="booking-title"
               className="mt-3 text-xl font-semibold tracking-tight text-card-foreground"
             >
-              Sala {room.name}
+              {room.name}
             </h2>
             <p className="mt-1 text-sm text-muted-foreground">
               Até {room.capacity} pessoas · {room.location}
