@@ -28,6 +28,15 @@ function getDynamicStatus(startTime: Date, endTime: Date): keyof typeof statusCo
   return "confirmado"
 }
 
+function formatReservationTime(date: Date) {
+  if (isNaN(date.getTime())) return "00:00"
+  return new Intl.DateTimeFormat("pt-BR", {
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZone: "UTC" // <- Isso impede a Vercel de subtrair 1h ou 3h do horário real
+  }).format(date)
+}
+
 // Mantivemos essa função apenas para a data (dia e mês), já que não sofre impacto de horas
 function formatReservationDate(date: Date) {
   if (isNaN(date.getTime())) return ""
@@ -178,11 +187,10 @@ export function ReservationsSidebar({
                   </p>
 
                   <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
-                    <span className="inline-flex items-center gap-1.5 font-medium text-foreground/90">
-                      <Clock className="size-3.5 text-primary/80" aria-hidden="true" />
-                      {/* CORREÇÃO 2: Exibindo as strings de hora diretas do banco */}
-                      {reservation.startTime}–{reservation.endTime}
-                    </span>
+                  <span className="inline-flex items-center gap-1.5 font-medium text-foreground/90">
+                    <Clock className="size-3.5 text-primary/80" aria-hidden="true" />
+                    {formatReservationTime(startDate)}–{formatReservationTime(endDate)}
+                  </span>
                     <span className="capitalize">{formatReservationDate(startDate)}</span>
                   </div>
                 </div>
