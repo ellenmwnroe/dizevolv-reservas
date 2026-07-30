@@ -1,9 +1,9 @@
 "use client"
 
 import { useState } from "react"
-import { Plus, Trash2, X, DoorOpen, Users, MapPin } from "lucide-react"
+import { Plus, Trash2, X, DoorOpen, Users, MapPin, Edit2, Save } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { createRoom, deleteRoom } from "@/app/actions/rooms"
+import { createRoom, deleteRoom, updateRoom } from "@/app/actions/rooms" // Certifique-se de ter o updateRoom criado nas actions!
 
 type RoomManagerProps = {
   isOpen: boolean
@@ -14,13 +14,21 @@ type RoomManagerProps = {
 }
 
 export function RoomManagerModal({ isOpen, onClose, rooms, onRoomChange, notify }: RoomManagerProps) {
+  // Estados para Criação
   const [name, setName] = useState("")
   const [capacity, setCapacity] = useState("10")
-  const [location, setLocation] = useState("Dizevolv")
+  const [location, setLocation] = useState("Sede Dizevolv")
   const [isLoading, setIsLoading] = useState(false)
+
+  // Estados para Edição
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const [editName, setEditName] = useState("")
+  const [editCapacity, setEditCapacity] = useState("")
+  const [editLocation, setEditLocation] = useState("")
 
   if (!isOpen) return null
 
+  // --- Ações de Criação ---
   async function handleCreate(e: React.FormEvent) {
     e.preventDefault()
     setIsLoading(true)
@@ -41,9 +49,11 @@ export function RoomManagerModal({ isOpen, onClose, rooms, onRoomChange, notify 
     notify("Sala criada com sucesso!", "success")
     setName("")
     setCapacity("10")
+    setLocation("Sede Dizevolv")
     onRoomChange()
   }
 
+  // --- Ações de Exclusão ---
   async function handleDelete(id: string) {
     const result = await deleteRoom(id)
     if (!result.success) {
@@ -51,6 +61,38 @@ export function RoomManagerModal({ isOpen, onClose, rooms, onRoomChange, notify 
       return
     }
     notify("Sala removida com sucesso.", "success")
+    onRoomChange()
+  }
+
+  // --- Ações de Edição ---
+  function startEditing(room: any) {
+    setEditingId(room.id)
+    setEditName(room.name)
+    setEditCapacity(String(room.capacity))
+    setEditLocation(room.location || "")
+  }
+
+  function cancelEditing() {
+    setEditingId(null)
+  }
+
+  async function handleUpdate(id: string) {
+    setIsLoading(true)
+    const result = await updateRoom({
+      id,
+      name: editName,
+      capacity: Number(editCapacity),
+      location: editLocation,
+    })
+    setIsLoading(false)
+
+    if (!result.success) {
+      notify(result.error || "Erro ao atualizar sala.", "error")
+      return
+    }
+
+    notify("Sala atualizada com sucesso!", "success")
+    setEditingId(null)
     onRoomChange()
   }
 
@@ -68,7 +110,7 @@ export function RoomManagerModal({ isOpen, onClose, rooms, onRoomChange, notify 
         </div>
 
         {/* Formulário para Nova Sala */}
-        <form onSubmit={handleCreate} className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6 p-4 rounded-2xl border border-border bg-background/50">
+        <form onSubmit={handleCreate} className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6 p-4 rounded-2xl border border-border bg-background/50">
           <div className="flex flex-col gap-1">
             <label className="text-[11px] font-medium uppercase text-muted-foreground">Nome da Sala</label>
             <input
@@ -77,6 +119,17 @@ export function RoomManagerModal({ isOpen, onClose, rooms, onRoomChange, notify 
               placeholder="Ex: Sala Atlas"
               value={name}
               onChange={(e) => setName(e.target.value)}
+              className="h-10 rounded-xl border border-input bg-background/70 px-3 text-xs outline-none focus:border-primary"
+            />
+          </div>
+          <div className="flex flex-col gap-1">
+            <label className="text-[11px] font-medium uppercase text-muted-foreground">Local</label>
+            <input
+              type="text"
+              required
+              placeholder="Ex: Andar Principal"
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
               className="h-10 rounded-xl border border-input bg-background/70 px-3 text-xs outline-none focus:border-primary"
             />
           </div>
@@ -101,22 +154,75 @@ export function RoomManagerModal({ isOpen, onClose, rooms, onRoomChange, notify 
         {/* Lista de Salas Existentes */}
         <div className="max-h-60 overflow-y-auto flex flex-col gap-2 pr-1">
           {rooms.map((room) => (
-            <div key={room.id} className="flex items-center justify-between p-3 rounded-xl border border-border bg-background/60">
-              <div>
-                <p className="text-sm font-semibold text-foreground">{room.name}</p>
-                <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground">
-                  <span className="flex items-center gap-1"><Users className="size-3 text-primary" /> {room.capacity} pessoas</span>
-                  <span className="flex items-center gap-1"><MapPin className="size-3 text-primary" /> {room.location || "Sede"}</span>
+            <div key={room.id} className="p-3 rounded-xl border border-border bg-background/60">
+              {editingId === room.id ? (
+                // Modo de Edição
+                <div className="flex flex-col gap-2">
+                  <input
+                    type="text"
+                    value={editName}
+                    onChange={(e) => setEditName(e.target.value)}
+                    className="h-8 rounded-lg border border-input bg-background px-2 text-sm outline-none focus:border-primary"
+                    placeholder="Nome da sala"
+                  />
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={editLocation}
+                      onChange={(e) => setEditLocation(e.target.value)}
+                      className="h-8 w-2/3 rounded-lg border border-input bg-background px-2 text-xs outline-none focus:border-primary"
+                      placeholder="Local"
+                    />
+                    <input
+                      type="number"
+                      value={editCapacity}
+                      onChange={(e) => setEditCapacity(e.target.value)}
+                      className="h-8 w-1/3 rounded-lg border border-input bg-background px-2 text-xs outline-none focus:border-primary"
+                      placeholder="Capacidade"
+                      min={1}
+                    />
+                  </div>
+                  <div className="flex justify-end gap-2 mt-1">
+                    <Button variant="ghost" size="sm" onClick={cancelEditing} className="h-8 px-2 text-muted-foreground">
+                      <X className="size-4 mr-1" /> Cancelar
+                    </Button>
+                    <Button size="sm" onClick={() => handleUpdate(room.id)} disabled={isLoading} className="h-8 px-2">
+                      <Save className="size-4 mr-1" /> Salvar
+                    </Button>
+                  </div>
                 </div>
-              </div>
-              <Button
-                variant="ghost"
-                size="icon-sm"
-                onClick={() => handleDelete(room.id)}
-                className="text-muted-foreground hover:text-destructive hover:bg-destructive/10"
-              >
-                <Trash2 className="size-4" />
-              </Button>
+              ) : (
+                // Modo de Visualização
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-semibold text-foreground">{room.name}</p>
+                    <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground">
+                      <span className="flex items-center gap-1"><Users className="size-3 text-primary" /> {room.capacity} pessoas</span>
+                      <span className="flex items-center gap-1"><MapPin className="size-3 text-primary" /> {room.location || "Sede"}</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <Button
+                      variant="ghost"
+                      size="icon-sm"
+                      onClick={() => startEditing(room)}
+                      className="text-muted-foreground hover:text-primary hover:bg-primary/10"
+                      title="Editar Sala"
+                    >
+                      <Edit2 className="size-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon-sm"
+                      onClick={() => handleDelete(room.id)}
+                      className="text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                      title="Excluir Sala"
+                    >
+                      <Trash2 className="size-4" />
+                    </Button>
+                  </div>
+                </div>
+              )}
             </div>
           ))}
         </div>

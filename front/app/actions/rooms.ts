@@ -47,3 +47,32 @@ export async function deleteRoom(id: string) {
     return { success: false, error: "Não é possível excluir uma sala que possui histórico de reservas." }
   }
 }
+
+export async function updateRoom(data: { 
+  id: string; 
+  name: string; 
+  capacity: number; 
+  location: string 
+}) {
+  try {
+    // Atualiza a sala no banco de dados usando o Prisma
+    await prisma.room.update({
+      where: { 
+        id: data.id 
+      },
+      data: {
+        name: data.name,
+        capacity: data.capacity,
+        location: data.location,
+      },
+    })
+
+    // Limpa o cache da página para mostrar os dados atualizados instantaneamente
+    revalidatePath("/") 
+    
+    return { success: true }
+  } catch (error) {
+    console.error("Erro ao atualizar sala:", error)
+    return { success: false, error: "Erro ao atualizar a sala no banco de dados." }
+  }
+}
