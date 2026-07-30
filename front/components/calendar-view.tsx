@@ -45,12 +45,32 @@ export function CalendarView({ reservations, rooms }: CalendarViewProps) {
     }
   }
 
+  // NOVA FUNÇÃO: Robusta para extrair apenas a hora, independente de como venha do banco
   function formatTime(timeData: any) {
     if (!timeData) return "00:00"
-    if (typeof timeData === "string" && timeData.includes("T")) {
-      return new Date(timeData).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", timeZone: "America/Fortaleza" })
+
+    // 1. Se já vier bonitinho como "08:00" ou "14:30"
+    if (typeof timeData === "string" && /^\d{2}:\d{2}/.test(timeData)) {
+      return timeData.slice(0, 5)
     }
-    return String(timeData).slice(0, 5)
+
+    // 2. Se for uma string gigante do JS (ex: "Thu Jul 30 2026 08:00:00...") procura a hora lá dentro
+    if (typeof timeData === "string") {
+      const match = timeData.match(/\b(\d{2}:\d{2})\b/)
+      if (match) return match[1]
+    }
+
+    // 3. Tenta converter via objeto Date (com fuso UTC para não sofrer o bug da Vercel)
+    const dateObj = new Date(timeData)
+    if (!isNaN(dateObj.getTime())) {
+      return new Intl.DateTimeFormat("pt-BR", {
+        hour: "2-digit",
+        minute: "2-digit",
+        timeZone: "UTC" 
+      }).format(dateObj)
+    }
+
+    return "00:00"
   }
 
   if (groupedByDate.length === 0) {
@@ -78,7 +98,7 @@ export function CalendarView({ reservations, rooms }: CalendarViewProps) {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
             {items.map((res) => {
-              const roomName = res.roomName || res.room?.name || "Sala"
+              const roomName = res.roomName || res.room?.name || "Desconhecida"
               const userName = res.userName || res.user?.name || "Convidado"
               
               return (
@@ -92,7 +112,8 @@ export function CalendarView({ reservations, rooms }: CalendarViewProps) {
                     <div className="flex items-center justify-between gap-2 mb-1">
                       <span className="inline-flex items-center gap-1 text-xs font-semibold text-primary">
                         <DoorOpen className="size-3.5" />
-                        Sala {roomName}
+                        {/* CORREÇÃO: "Sala " hardcoded removido */}
+                        {roomName}
                       </span>
                       <span className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground bg-secondary/50 px-2 py-0.5 rounded-md">
                         <Clock className="size-3 text-primary/80" />
