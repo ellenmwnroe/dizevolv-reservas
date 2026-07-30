@@ -28,15 +28,7 @@ function getDynamicStatus(startTime: Date, endTime: Date): keyof typeof statusCo
   return "confirmado"
 }
 
-function formatReservationTime(date: Date) {
-  if (isNaN(date.getTime())) return "00:00"
-  return new Intl.DateTimeFormat("pt-BR", {
-    hour: "2-digit",
-    minute: "2-digit",
-    timeZone: "America/Fortaleza" 
-  }).format(date)
-}
-
+// Mantivemos essa função apenas para a data (dia e mês), já que não sofre impacto de horas
 function formatReservationDate(date: Date) {
   if (isNaN(date.getTime())) return ""
   return new Intl.DateTimeFormat("pt-BR", {
@@ -63,7 +55,7 @@ type ReservationsSidebarProps = {
   reservations: any[] 
   currentUserName: string 
   onDeleteBooking: (id: string) => void
-  onEditBooking?: (reservation: any) => void // NOVO: Função para disparar a edição
+  onEditBooking?: (reservation: any) => void
   rooms: any[]
   roomFilter: string
   onRoomFilterChange: (id: string) => void
@@ -90,7 +82,6 @@ export function ReservationsSidebar({
         </span>
       </div>
 
-      {/* SELETOR / FILTRO POR SALA CUSTOMIZADO */}
       <div className="relative">
         <div className="flex items-center gap-1.5 mb-1.5 text-xs font-medium text-muted-foreground">
           <Filter className="size-3 text-primary" />
@@ -109,7 +100,6 @@ export function ReservationsSidebar({
               </option>
             ))}
           </select>
-          {/* Seta customizada flutuante */}
           <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-primary/80">
             <ChevronDown className="size-4" />
           </div>
@@ -149,7 +139,6 @@ export function ReservationsSidebar({
                   
                   {ownerName === currentUserName && currentStatus === "confirmado" && (
                     <div className="absolute right-2 top-2 flex items-center gap-1">
-                      {/* Botão de Editar */}
                       {onEditBooking && (
                         <button 
                           onClick={() => onEditBooking(reservation)}
@@ -159,7 +148,6 @@ export function ReservationsSidebar({
                           <Pencil className="size-4" />
                         </button>
                       )}
-                      {/* Botão de Excluir */}
                       <button 
                         onClick={() => onDeleteBooking(reservation.id)}
                         title="Cancelar Reserva"
@@ -172,7 +160,8 @@ export function ReservationsSidebar({
 
                   <div className="flex items-center gap-2 mb-2 pr-14">
                     <p className="text-sm font-semibold text-foreground">
-                      Sala {reservation.roomName || reservation.room?.name || "Desconhecida"} 
+                      {/* CORREÇÃO 1: Removido o "Sala " fixo daqui */}
+                      {reservation.roomName || reservation.room?.name || "Desconhecida"} 
                     </p>
                     <span
                       className={cn(
@@ -191,7 +180,8 @@ export function ReservationsSidebar({
                   <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
                     <span className="inline-flex items-center gap-1.5 font-medium text-foreground/90">
                       <Clock className="size-3.5 text-primary/80" aria-hidden="true" />
-                      {formatReservationTime(startDate)}–{formatReservationTime(endDate)}
+                      {/* CORREÇÃO 2: Exibindo as strings de hora diretas do banco */}
+                      {reservation.startTime}–{reservation.endTime}
                     </span>
                     <span className="capitalize">{formatReservationDate(startDate)}</span>
                   </div>
