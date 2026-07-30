@@ -128,7 +128,7 @@ export function RoomManagerModal({ isOpen, onClose, rooms, onRoomChange, notify 
             <input type="text" required placeholder="Ex: Sala Atlas" value={name} onChange={(e) => setName(e.target.value)} className="h-10 rounded-xl border border-input bg-background/70 px-3 text-xs outline-none focus:border-primary" />
           </div>
           <div className="flex flex-col gap-1">
-            <label className="text-[11px] font-medium uppercase text-muted-foreground">Gênero</label>
+            <label className="text-[11px] font-medium uppercase text-muted-foreground">Categoria</label>
             <input type="text" required placeholder="Ex: Foco Absoluto" value={category} onChange={(e) => setCategory(e.target.value)} className="h-10 rounded-xl border border-input bg-background/70 px-3 text-xs outline-none focus:border-primary" />
           </div>
           <div className="flex flex-col gap-1">
@@ -161,7 +161,7 @@ export function RoomManagerModal({ isOpen, onClose, rooms, onRoomChange, notify 
                 <div className="flex flex-col gap-2">
                   <div className="flex gap-2">
                     <input type="text" value={editName} onChange={(e) => setEditName(e.target.value)} className="h-8 w-1/3 rounded-lg border border-input bg-background px-2 text-sm outline-none focus:border-primary" placeholder="Nome da sala" />
-                    <input type="text" value={editCategory} onChange={(e) => setEditCategory(e.target.value)} className="h-8 w-1/3 rounded-lg border border-input bg-background px-2 text-xs outline-none focus:border-primary" placeholder="Gênero" />
+                    <input type="text" value={editCategory} onChange={(e) => setEditCategory(e.target.value)} className="h-8 w-1/3 rounded-lg border border-input bg-background px-2 text-xs outline-none focus:border-primary" placeholder="Categoria" />
                     <input type="number" value={editCapacity} onChange={(e) => setEditCapacity(e.target.value)} className="h-8 w-1/3 rounded-lg border border-input bg-background px-2 text-xs outline-none focus:border-primary" placeholder="Capacidade" min={1} />
                   </div>
                   <div className="flex gap-2">
@@ -183,9 +183,26 @@ export function RoomManagerModal({ isOpen, onClose, rooms, onRoomChange, notify 
                   <div className="w-full">
                     <div className="flex items-center gap-2">
                       <p className="text-sm font-semibold text-foreground">{room.name}</p>
-                      {room.category && <span className="text-[10px] font-bold uppercase tracking-wider text-primary bg-primary/10 px-2 py-0.5 rounded-full">{room.category}</span>}
+                      
+                      {/* LÓGICA DO FALLBACK DE CATEGORIA AQUI */}
+                      {room.category ? (
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-primary bg-primary/10 px-2 py-0.5 rounded-full">
+                          {room.category}
+                        </span>
+                      ) : (
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground bg-muted/50 border border-dashed border-border px-2 py-0.5 rounded-full">
+                          SEM CATEGORIA
+                        </span>
+                      )}
                     </div>
-                    {room.description && <p className="text-xs text-muted-foreground mt-1 line-clamp-1">{room.description}</p>}
+                    
+                    {/* LÓGICA DO FALLBACK DE DESCRIÇÃO AQUI */}
+                    {room.description ? (
+                      <p className="text-xs text-muted-foreground mt-1 line-clamp-1">{room.description}</p>
+                    ) : (
+                      <p className="text-xs text-muted-foreground/50 mt-1 italic">Sem descrição informada.</p>
+                    )}
+
                     <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
                       <span className="flex items-center gap-1"><Users className="size-3 text-primary" /> {room.capacity} pessoas</span>
                       <span className="flex items-center gap-1"><MapPin className="size-3 text-primary" /> {room.location || "Sede"}</span>
