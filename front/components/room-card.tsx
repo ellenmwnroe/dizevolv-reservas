@@ -10,6 +10,7 @@ export type DbRoom = {
   name: string
   capacity: number
   description: string
+  category: string
   location: string
   tag: string
   status?: "livre" | "ocupada" | "em-breve"
@@ -58,6 +59,13 @@ export function RoomCard({ room, onReserve }: RoomCardProps) {
           <h3 className="text-lg font-semibold tracking-tight text-card-foreground">
             {room.name}
           </h3>
+          {room.category && (
+            <div className="mt-2">
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#FF5A1F]/15 text-[#FF5A1F] border border-[#FF5A1F]/20">
+                {room.category}
+              </span>
+            </div>
+          )}
         </div>
         <span className={cn("inline-flex items-center gap-1.5 text-xs font-medium", status.text)}>
           <span className={cn("size-1.5 rounded-full", status.dot)} aria-hidden="true" />
