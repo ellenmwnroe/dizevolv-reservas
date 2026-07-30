@@ -56,7 +56,7 @@ export function RoomCard({ room, onReserve }: RoomCardProps) {
             {room.tag}
           </span>
           <h3 className="text-lg font-semibold tracking-tight text-card-foreground">
-            Sala {room.name}
+            {room.name}
           </h3>
         </div>
         <span className={cn("inline-flex items-center gap-1.5 text-xs font-medium", status.text)}>
