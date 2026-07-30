@@ -3,8 +3,6 @@
 import { ArrowUpRight, MapPin, Users } from "lucide-react"
 import { cn } from "@/lib/utils"
 
-// Nova tipagem: Espelha o que vem do Prisma, mas deixa o status opcional
-// para não quebrar a interface até implementarmos a lógica de disponibilidade real.
 export type DbRoom = {
   id: string
   name: string
@@ -32,7 +30,6 @@ const statusMap: Record<
 }
 
 export function RoomCard({ room, onReserve }: RoomCardProps) {
-  // O pulo do gato: Se o room.status vier vazio do banco, ele assume "livre"
   const currentStatus = room.status || "livre"
   const status = statusMap[currentStatus]
 
@@ -41,41 +38,50 @@ export function RoomCard({ room, onReserve }: RoomCardProps) {
       type="button"
       onClick={() => onReserve(room)}
       className={cn(
-        "group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card p-5 text-left",
+        "group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card p-5 text-left w-full",
         "transition-all duration-300 hover:-translate-y-1 hover:border-primary/50 hover:ring-glow",
       )}
     >
-      {/* ambient corner glow on hover */}
       <span
         aria-hidden="true"
         className="pointer-events-none absolute -right-16 -top-16 size-40 rounded-full bg-primary/15 opacity-0 blur-3xl transition-opacity duration-300 group-hover:opacity-100"
       />
 
-      <div className="flex items-start justify-between gap-3">
+      <div className="flex items-start justify-between gap-3 w-full">
         <div className="flex flex-col gap-1.5">
-          <span className="inline-flex w-fit items-center rounded-md border border-border/70 bg-secondary/60 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-            {room.tag}
-          </span>
+          {/* Se a tag antiga existir, renderiza a pílula cinza */}
+          {room.tag && (
+            <span className="inline-flex w-fit items-center rounded-md border border-border/70 bg-secondary/60 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+              {room.tag}
+            </span>
+          )}
+          
           <h3 className="text-lg font-semibold tracking-tight text-card-foreground">
             {room.name}
           </h3>
+          
+          {/* Nova Tag Laranja */}
           {room.category && (
-            <div className="mt-2">
+            <div className="mt-1">
               <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#FF5A1F]/15 text-[#FF5A1F] border border-[#FF5A1F]/20">
                 {room.category}
               </span>
             </div>
           )}
         </div>
-        <span className={cn("inline-flex items-center gap-1.5 text-xs font-medium", status.text)}>
-          <span className={cn("size-1.5 rounded-full", status.dot)} aria-hidden="true" />
+        
+        <span className={cn("inline-flex items-center gap-1.5 text-xs font-medium whitespace-nowrap", status.text)}>
+          <span className={cn("size-1.5 rounded-full shrink-0", status.dot)} aria-hidden="true" />
           {status.label}
         </span>
       </div>
 
-      <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-        {room.description}
-      </p>
+      {/* Só renderiza a descrição se ela existir */}
+      {room.description && (
+        <p className="mt-3 text-sm leading-relaxed text-muted-foreground line-clamp-2">
+          {room.description}
+        </p>
+      )}
 
       <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
         <span className="inline-flex items-center gap-1.5">
@@ -88,7 +94,7 @@ export function RoomCard({ room, onReserve }: RoomCardProps) {
         </span>
       </div>
 
-      <div className="mt-5 flex items-center justify-between border-t border-border/60 pt-4">
+      <div className="mt-5 flex items-center justify-between border-t border-border/60 pt-4 w-full">
         <span className="text-xs text-muted-foreground">
           {currentStatus === "em-breve" && room.freeIn
             ? `Disponível em ${room.freeIn}`
