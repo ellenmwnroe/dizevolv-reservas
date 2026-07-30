@@ -194,7 +194,7 @@ export default function DashboardClient({ initialRooms, initialBookings }: Dashb
 
       {/* Toast / Alerta Flutuante */}
       {systemAlert && (
-        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-3 rounded-2xl border border-primary/30 bg-card/95 px-4 py-3 shadow-2xl backdrop-blur-md animate-in fade-in slide-in-from-bottom-5">
+        <div className="fixed bottom-6 right-6 z-[9999] flex items-center gap-3 rounded-2xl border border-primary/30 bg-card/95 px-4 py-3 shadow-2xl backdrop-blur-md animate-in fade-in slide-in-from-bottom-5">
           {systemAlert.type === "success" ? (
             <CheckCircle2 className="size-5 text-primary shrink-0" />
           ) : (
